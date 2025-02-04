@@ -64,8 +64,10 @@ void My_HAL_GPIO_WritePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState 
     }
 }
 
-/*
 void My_HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 {
+    uint32_t odr;
+    assert_param(IS_GPIO_PIN(GPIO_Pin));
+    odr = GPIOx->ODR;
+    GPIOx->BSRR = ((odr & GPIO_Pin) << 16U) | (~odr & GPIO_Pin); 
 }
-*/
