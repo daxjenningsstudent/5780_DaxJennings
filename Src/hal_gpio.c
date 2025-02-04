@@ -41,12 +41,22 @@ void My_HAL_GPIO_DeInit(GPIO_TypeDef  *GPIOx, uint32_t GPIO_Pin)
 }
 */
 
-/*
 GPIO_PinState My_HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 {
-    return -1;
+    GPIO_PinState currentbit;
+
+    assert_param(IS_GPIO_PIN(GPIO_Pin));
+
+    if ((GPIOx->IDR & GPIO_Pin) != (uint32_t)GPIO_PIN_RESET)
+    {
+        currentbit = GPIO_PIN_SET;
+    }
+    else
+    {
+        currentbit = GPIO_PIN_RESET;
+    }
+    return currentbit;
 }
-*/
 
 void My_HAL_GPIO_WritePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState)
 {
