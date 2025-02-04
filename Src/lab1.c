@@ -25,7 +25,7 @@ int lab1_main(void) {
     assert((GPIOC->MODER & (0b11 << (6 * 2))) == (0b01 << (6 * 2))); // PC8
     assert((GPIOC->MODER & (0b11 << (7 * 2))) == (0b01 << (7 * 2))); // PC9
 
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET); // Start PC8 high
+    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET); // Start PC8 high
     // Assert PC8 is high
     assert(GPIOC->ODR & GPIO_PIN_6);
 
