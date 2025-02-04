@@ -2,6 +2,12 @@
 #include "main.h"
 #include <assert.h>
 
+void EXTI0_1_IRQHandler()
+{
+    EXTI ->PR |= 0x1;
+    // flash leds
+}
+
 int lab2_main(void) {
     HAL_Init(); // Reset of all peripherals, init the Flash and Systick
     assert(HAL_GetTick() == 0); // Ensure HAL initialization resets tick counter

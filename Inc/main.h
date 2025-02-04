@@ -3,6 +3,8 @@
 
 void SystemClock_Config(void);
 void My_HAL_RCC_GPIOC_CLK_ENABLE(void);
+void EXTI0_1_IRQHandler(void);
+void setup_interrupt(void);
 
 int lab1_main(void);
 int lab2_main(void);

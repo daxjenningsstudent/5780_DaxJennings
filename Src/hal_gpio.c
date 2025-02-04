@@ -81,3 +81,14 @@ void My_HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
     odr = GPIOx->ODR;
     GPIOx->BSRR = ((odr & GPIO_Pin) << 16U) | (~odr & GPIO_Pin); 
 }
+
+void setup_interrupt()
+{
+    EXTI ->IMR |= 0x01;
+    EXTI ->RTSR |= 0x01;
+
+    SYSCFG ->EXTICR[0] &= ~((0) | (1) | (1 << 2));
+
+    HAL_NVIC_EnableIRQ (EXTI0_1_IRQHandler);
+    HAL_NVIC_SetPriority (EXTI0_1_IRQHandler, 1, 1)
+}

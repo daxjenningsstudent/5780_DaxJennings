@@ -65,6 +65,8 @@ void PendSV_Handler(void)
 {
 }
 
+volatile uint32_t tick_counter = 0; // Global counter variable
+
 /**
   * @brief  This function handles SysTick Handler.
   * @param  None
@@ -73,6 +75,17 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
     HAL_IncTick();
+
+    tick_counter++; // Increment every millisecond
+
+    if (tick_counter >= 200) // 200ms has elapsed
+    {
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7); // Toggle LED state
+        tick_counter = 0; // Reset counter
+    }
+
+    //My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET); // Start PC9 (Green) high
+ 
 }
 
 /******************************************************************************/
