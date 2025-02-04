@@ -1,8 +1,10 @@
 #include <stm32f0xx_hal.h>
 #include "main.h"
+#include <assert.h>
 
 int lab1_main(void) {
     HAL_Init(); // Reset of all peripherals, init the Flash and Systick
+    assert(HAL_GetTick() == 0); // Ensure HAL initialization resets tick counter
     SystemClock_Config(); //Configure the system clock
 
     /* This example uses HAL library calls to control
