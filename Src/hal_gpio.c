@@ -1,13 +1,39 @@
 #include <stdint.h>
 #include <stm32f0xx_hal.h>
 #include <stm32f0xx_hal_gpio.h>
-/*
+
 void My_HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
 {
-    GPIOC->MODER |= 0b01000000;     // sets the 6th bit
-    GPIOC->MODER &= ~(0b10000000);  // clears the 7th bit
+    // LED Pins
+    // General-purpose output mode using the MODER register
+        // Sets the 12, 14, 16, and 18 bits in the GPIOC_MODER register
+        GPIOC->MODER |= (1 << 12) | (1 << 14) | (1 << 16) | (1 << 18);
+        // Clears the 13, 15, 17, and 19 bits in the GPIOC_MODER register
+        GPIOC->MODER &= ~((1 << 13) | (1 << 15) | (1 << 17) | (1 << 19));
+    // Push-pull output type using the OTYPER register
+        // Clears the 6, 7, 8, and 9 bits in the GPIOC_OTYPER register
+        GPIOC->OTYPER &= ~((1 << 6) | (1 << 7) | (1 << 8) | (1 << 9));
+    // Low speed using the OSPEEDR register
+        // Clears the 12, 14, 16, and 18 bits in the GPIOC_OSPEEDR register
+        GPIOC->OSPEEDR &= ~((1 << 12) | (1 << 14) | (1 << 16) | (1 << 18));
+    // No pull-up/down resistors using the PUPDR register
+        // Clears the 12, 14, 16, and 18 bits in the GPIOC_PUPDR register
+        GPIOC->PUPDR &= ~((1 << 12) | (1 << 14) | (1 << 16) | (1 << 18) | (1 << 13) | (1 << 15) | (1 << 17) | (1 << 19));
+    
+    // USER Button Pin
+    // Digital input mode using the MODER register
+        // Clears the 0 and 1 bits in the GPIOA_MODER register
+        GPIOA->MODER &= ~(0 | 1);
+    // Low speed using the OSPEEDR register
+        // Clears the 0 bit in the GPIOA_OSPEEDR register
+        GPIOA->OSPEEDR &= ~(0);
+    // Pull-down resistor using the PUPDR register.
+        // Sets the 1 bit in the GPIOA_PUPDR register
+        GPIOA->PUPDR |= (1);
+        // Clears the 0 bit in the GPIOA_PUPDR register
+        GPIOA->PUPDR &= ~(0);
+
 }
-*/
 
 /*
 void My_HAL_GPIO_DeInit(GPIO_TypeDef  *GPIOx, uint32_t GPIO_Pin)
