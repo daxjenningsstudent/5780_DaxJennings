@@ -8,7 +8,7 @@ void EXTI0_1_IRQHandler(void)
     // Toggle PC8 and PC9 (Green & Orange LEDs)
     My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
     My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);
-    EXTI->PR = (1<<0);
+    //EXTI->PR = (1<<0);
 
     // Busy-wait delay loop (approx 1-2 seconds)
     //volatile uint32_t delay_count = 1500000;
@@ -33,9 +33,11 @@ int lab2_main(void) {
     assert(HAL_GetTick() == 0); // Ensure HAL initialization resets tick counter
     setup_interrupt();
 
-    NVIC_SetPriority(EXTI0_1_IRQn, 1);
-    NVIC_SetPriority(SysTick_IRQn, 2);
     NVIC_EnableIRQ(EXTI0_1_IRQn);
+    NVIC_EnableIRQ(SysTick_IRQn);
+    NVIC_SetPriority(EXTI0_1_IRQn, 2);
+    NVIC_SetPriority(SysTick_IRQn, 0);
+    
     
     SystemClock_Config(); //Configure the system clock
 

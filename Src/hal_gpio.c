@@ -92,6 +92,6 @@ void setup_interrupt()
     //SYSCFG->EXTICR[0] |= (0x0);   // Set EXTI0 to GPIOA (for PA0)
 
     // NVIC_EnableIRQ (EXTI0_1_IRQn);
-    // NVIC_SetPriority(SysTick_IRQn, 2);
-    // NVIC_SetPriority (EXTI0_1_IRQn, 3);
+    // NVIC_SetPriority(SysTick_IRQn, 0);
+    // NVIC_SetPriority (EXTI0_1_IRQn, 2);
 }
