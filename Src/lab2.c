@@ -2,15 +2,28 @@
 #include "main.h"
 #include <assert.h>
 
-void EXTI0_1_IRQHandler()
+void EXTI0_1_IRQHandler(void)
 {
-    EXTI ->PR |= 0x1;
-    // flash leds
+    // Toggle PC8 and PC9 (Green & Orange LEDs)
+    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);
+
+    // Busy-wait delay loop (approx 1-2 seconds)
+    volatile uint32_t delay_count = 5000000;
+    while (delay_count--);  // Decrement until the delay is over
+
+    // Toggle LEDs after delay
+    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8); // Green LED
+    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9); // Orange LED
+
+    // Clear the EXTI pending flag for line 0 (EXTI_PR_PIF0)
+    EXTI->PR |= (1 << 0);
 }
 
 int lab2_main(void) {
     HAL_Init(); // Reset of all peripherals, init the Flash and Systick
     assert(HAL_GetTick() == 0); // Ensure HAL initialization resets tick counter
+    setup_interrupt();
     
     SystemClock_Config(); //Configure the system clock
 

@@ -2,6 +2,7 @@
 #include <stm32f0xx_hal.h>
 #include <stm32f0xx_hal_gpio.h>
 
+
 void My_HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
 {
     // LED Pins
@@ -87,8 +88,11 @@ void setup_interrupt()
     EXTI ->IMR |= 0x01;
     EXTI ->RTSR |= 0x01;
 
-    SYSCFG ->EXTICR[0] &= ~((0) | (1) | (1 << 2));
+    SYSCFG->EXTICR[0] &= ~(0xF);  // Clear all EXTI line 0 settings
+    SYSCFG->EXTICR[0] |= (0x0);   // Set EXTI0 to GPIOA (for PA0)
 
-    HAL_NVIC_EnableIRQ (EXTI0_1_IRQHandler);
-    HAL_NVIC_SetPriority (EXTI0_1_IRQHandler, 1, 1)
+    HAL_NVIC_EnableIRQ (EXTI0_1_IRQn);
+    HAL_NVIC_SetPriority(SysTick_IRQn, 2, 0);
+    HAL_NVIC_SetPriority (EXTI0_1_IRQn, 3, 0);
+
 }
