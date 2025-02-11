@@ -65,7 +65,7 @@ void PendSV_Handler(void)
 {
 }
 
-volatile uint32_t tick_counter = 0; // Global counter variable
+//volatile uint32_t tick_counter = 0; // Global counter variable
 
 /**
   * @brief  This function handles SysTick Handler.
@@ -76,6 +76,7 @@ void SysTick_Handler(void)
 {
     HAL_IncTick();
 
+    static uint32_t tick_counter = 0;
     tick_counter++; // Increment every millisecond
 
     if (tick_counter >= 200) // 200ms has elapsed

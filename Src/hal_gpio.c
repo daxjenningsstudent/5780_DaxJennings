@@ -89,10 +89,9 @@ void setup_interrupt()
     EXTI ->RTSR |= 0x01;
 
     SYSCFG->EXTICR[0] &= ~(0xF);  // Clear all EXTI line 0 settings
-    SYSCFG->EXTICR[0] |= (0x0);   // Set EXTI0 to GPIOA (for PA0)
+    //SYSCFG->EXTICR[0] |= (0x0);   // Set EXTI0 to GPIOA (for PA0)
 
-    HAL_NVIC_EnableIRQ (EXTI0_1_IRQn);
-    HAL_NVIC_SetPriority(SysTick_IRQn, 2, 0);
-    HAL_NVIC_SetPriority (EXTI0_1_IRQn, 3, 0);
-
+    // NVIC_EnableIRQ (EXTI0_1_IRQn);
+    // NVIC_SetPriority(SysTick_IRQn, 2);
+    // NVIC_SetPriority (EXTI0_1_IRQn, 3);
 }
