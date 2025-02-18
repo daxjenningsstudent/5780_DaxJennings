@@ -16,6 +16,7 @@ int lab3_main(void) {
     My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET); // Start PC8 high
 
     Timer2_Init();
+    TIM3_PWM_Init();
 
     while (1) {
         // Main loop does nothing, the timer interrupt handles LED toggling
@@ -53,4 +54,33 @@ void TIM2_IRQHandler(void) {
         My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8); // Green LED
         My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9); // Orange LED
     }
+}
+
+void TIM3_PWM_Init(void) {
+    // 1. Enable TIM3 clock in RCC
+    RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
+
+    // 2. Set the timer update period for 800 Hz PWM
+    // Formula: PWM frequency = timer clock / ((PSC + 1) * (ARR + 1))
+    // Assume APB1 Timer Clock = 16 MHz
+    TIM3->PSC = 99;  // Prescaler to slow down clock (16MHz / (99+1) = 160kHz)
+    TIM3->ARR = 199; // Auto-reload value to get 800Hz (160kHz / 200 = 800Hz)
+
+    // 3. Configure CCMR1 to set channels 1 & 2 in PWM mode
+    TIM3->CCMR1 &= ~(TIM_CCMR1_CC1S | TIM_CCMR1_CC2S); // Set as output
+    TIM3->CCMR1 |= (6 << TIM_CCMR1_OC1M_Pos); // PWM Mode 2 for CH1
+    TIM3->CCMR1 |= (6 << TIM_CCMR1_OC2M_Pos); // PWM Mode 1 for CH2
+
+    // Enable output compare preload for both channels
+    TIM3->CCMR1 |= TIM_CCMR1_OC1PE | TIM_CCMR1_OC2PE;
+
+    // 4. Enable output channels in CCER
+    TIM3->CCER |= TIM_CCER_CC1E | TIM_CCER_CC2E;
+
+    // 5. Set CCRx registers to 20% of ARR
+    TIM3->CCR1 = (uint16_t)(TIM3->ARR * 0.2); // 20% duty cycle for CH1
+    TIM3->CCR2 = (uint16_t)(TIM3->ARR * 0.2); // 20% duty cycle for CH2
+
+    // Start the timer
+    TIM3->CR1 |= TIM_CR1_CEN;
 }

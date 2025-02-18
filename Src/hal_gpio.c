@@ -34,6 +34,12 @@ void My_HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
         // Clears the 0 bit in the GPIOA_PUPDR register
         GPIOA->PUPDR &= ~(0);
 
+    // PC4 and PC5
+        // Alternate Function mode using the MODER register
+        // Sets the 9 and 11 bits in the GPIOC_MODER register
+        GPIOC->MODER |= (1 << 9) | (1 << 11);
+        // Clears the 8 and 10 bits in the GPIOC_MODER register
+        GPIOC->MODER &= ~((1 << 8) | (1 << 10));        
 }
 
 /*
