@@ -77,10 +77,10 @@ void TIM3_PWM_Init(void) {
     // Enable output compare preload for both channels
     TIM3->CCMR1 |= TIM_CCMR1_OC1PE | TIM_CCMR1_OC2PE;
 
-    // 4. Enable output channels in CCER
+    // Enable output channels in CCER
     TIM3->CCER |= TIM_CCER_CC1E | TIM_CCER_CC2E;
 
-    // 5. Set CCRx registers to 20% of ARR
+    // Set CCRx registers to 20% of ARR
     TIM3->CCR1 = (uint16_t)(TIM3->ARR * 0.2); // 20% duty cycle for CH1
     TIM3->CCR2 = (uint16_t)(TIM3->ARR * 0.2); // 20% duty cycle for CH2
 
@@ -100,6 +100,7 @@ void Configure_PC6_PC7_AlternateFunction(void) {
     GPIOC->AFR[0] &= ~((0xF << (6 * 4)) | (0xF << (7 * 4)));  // Clear current AF settings
     GPIOC->AFR[0] |= ((0 << (6 * 4)) | (0 << (7 * 4))); // Set AF0 for PC6 and PC7 (AF0 corresponds to Timer 3)
 }
+
 void TIM3_Enable_PWM_PC6_PC7(void) {
     // Enable TIM3 peripheral clock
     RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
@@ -117,10 +118,10 @@ void TIM3_Enable_PWM_PC6_PC7(void) {
 
     // Enable output in CCER
     TIM3->CCER |= TIM_CCER_CC1E | TIM_CCER_CC2E;
-
-    // Set initial duty cycle (20% brightness)
-    TIM3->CCR1 = TIM3->ARR * 0.2;
-    TIM3->CCR2 = TIM3->ARR * 0.2;
+    
+    // Set initial duty cycle
+    TIM3->CCR1 = TIM3->ARR * 0.5;
+    TIM3->CCR2 = TIM3->ARR * 0.5;
 
     // Enable counter
     TIM3->CR1 |= TIM_CR1_CEN;
