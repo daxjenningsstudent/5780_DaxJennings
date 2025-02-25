@@ -66,4 +66,11 @@ int lab5_main(void) {
     // 5.3.3 Enable the I2C peripheral using the PE bit in the CR1 register.
     I2C->CR1 |= (1 << 0); // (Set bit 0)
 
+
+
+    //5.4.1 Set the L3GD20 slave address = 0x6B
+    I2C->CR2 |= (1 << 1) | (1 << 4) | (1 << 6) | (1 << 7); // (Set bits 1, 4, 6, and 7)
+    // Number of bytes to transmit = 1.
+    I2C->NBYTES |= (1 << 16); // (Set bit 0)
+    
 }
