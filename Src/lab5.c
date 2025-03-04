@@ -54,23 +54,57 @@ int lab5_main(void) {
     RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;
     // 5.3.2 Set the parameters in the TIMINGR register to use 100 kHz standard-mode I2C.
     // PRESC to 1
-    I2C->TIMINGR |= (1 << 28); // (Set bit 28)
+    I2C2->TIMINGR |= (1 << 28); // (Set bit 28)
     // SCLL to 0x13
-    I2C->TIMINGR |= (1 << 0) | (1 << 1) | (1 << 4); // (Set bits 0, 1, and 4)
+    I2C2->TIMINGR |= (1 << 0) | (1 << 1) | (1 << 4); // (Set bits 0, 1, and 4)
     // SCLH to 0xF
-    I2C->TIMINGR |= (1 << 8) | (1 << 9) | (1 << 10) | (1 << 11); // (Set bits 8-11)
+    I2C2->TIMINGR |= (1 << 8) | (1 << 9) | (1 << 10) | (1 << 11); // (Set bits 8-11)
     // SDADEL to 0x2
-    I2C->TIMINGR |= (1 << 17); // (Set bit 17)
+    I2C2->TIMINGR |= (1 << 17); // (Set bit 17)
     // SCLDEL to 0x4
-    I2C->TIMINGR |= (1 << 22); // (Set bit 22)
+    I2C2->TIMINGR |= (1 << 22); // (Set bit 22)
     // 5.3.3 Enable the I2C peripheral using the PE bit in the CR1 register.
-    I2C->CR1 |= (1 << 0); // (Set bit 0)
+    I2C2->CR1 |= (1 << 0); // (Set bit 0)
 
-
+    // Masks for waiting loops
+    uint32_t TXIS_mask = (1<<1);
+    uint32_t NACKF_mask = (1<<4);
+    uint32_t TC_mask = (1<<6);
+    uint32_t RXNE_mask = (1<<2);
 
     //5.4.1 Set the L3GD20 slave address = 0x6B
-    I2C->CR2 |= (1 << 1) | (1 << 4) | (1 << 6) | (1 << 7); // (Set bits 1, 4, 6, and 7)
+    I2C2->CR2 |= (1 << 1) | (1 << 4) | (1 << 6) | (1 << 7); // (Set bits 1, 4, 6, and 7)
     // Number of bytes to transmit = 1.
-    I2C->NBYTES |= (1 << 16); // (Set bit 0)
-    
+    I2C2->CR2 |= (1 << 16); // (Set bit 16)
+    // RD_WRN bit to indicate a write operation
+    I2C2->CR2 &= ~(1 << 10); // (Clear bit 10)
+    // Set the START bit
+    I2C2->CR2 |= (1 << 13); // (Set bit 13)
+    //5.4.2 Wait until either of the TXIS or NACKF flags are set.
+    while(!((I2C2->ISR & TXIS_mask) | (I2C2->ISR & NACKF_mask)))
+    //5.4.3 Write the address of the “WHO_AM_I” register into the I2C transmit register. (TXDR)
+    I2C2->TXDR = 0x69;
+    //5.4.4 Wait until the TC (Transfer Complete) flag is set.
+    while(!(I2C2->ISR & TC_mask))
+    //5.4.5 Reload the CR2 register with the same parameters as before, but set the RD_WRN bit to indicate a read operation.
+    // Don’t forget to set the START bit again to perform a I2C restart condition.
+    //5.4.1 Set the L3GD20 slave address = 0x6B
+    I2C2->CR2 |= (1 << 1) | (1 << 4) | (1 << 6) | (1 << 7); // (Set bits 1, 4, 6, and 7)
+    // Number of bytes to transmit = 1.
+    I2C2->CR2 |= (1 << 16); // (Set bit 16)
+    // RD_WRN bit to indicate a read operation
+    I2C2->CR2 |= (1 << 10); // (Set bit 10)
+    // Set the START bit
+    I2C2->CR2 |= (1 << 13); // (Set bit 13)
+    //5.4.6 Wait until either of the RXNE or NACKF flags are set.
+    while(!((I2C2->ISR & RXNE_mask) | (I2C2->ISR & NACKF_mask)))
+    // Continue if the RXNE flag is set.
+    while(!(I2C2->ISR & RXNE_mask))
+    //5.4.7 Wait until the TC (Transfer Complete) flag is set.
+    while(!(I2C2->ISR & TC_mask))
+    //5.4.8 Check the contents of the RXDR register to see if it matches 0xD3. (expected value of the “WHO_AM_I” register)
+    if(I2C2->RXDR != 0xD3){}
+    //5.4.9 Set the STOP bit in the CR2 register to release the I2C bus.
+    I2C2->CR2 |= (1 << 14); // (Set bit 14)
+
 }

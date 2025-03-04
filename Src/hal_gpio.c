@@ -39,7 +39,10 @@ void My_HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
         // Sets the 9 and 11 bits in the GPIOC_MODER register
         GPIOC->MODER |= (1 << 9) | (1 << 11);
         // Clears the 8 and 10 bits in the GPIOC_MODER register
-        GPIOC->MODER &= ~((1 << 8) | (1 << 10));        
+        GPIOC->MODER &= ~((1 << 8) | (1 << 10)); 
+        // Set Alternate Function AF1 for USART3 TX/RX
+        GPIOC->AFR[0] &= ~((0xF << (4 * 4)) | (0xF << (5 * 4)));  // Clear existing AF
+        GPIOC->AFR[0] |= (1 << (4 * 4)) | (1 << (5 * 4));  // Set AF1 (USART3)
 }
 
 /*
