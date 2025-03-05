@@ -1,6 +1,8 @@
 #include <stm32f0xx_hal.h>
 #include "main.h"
 #include <assert.h>
+volatile uint16_t read;
+volatile uint16_t flag = 0;
 
 void USART_Transmit(char data) {
     // Wait until the Transmit Data Register Empty (TXE) flag is set
@@ -16,7 +18,9 @@ char USART_Receive(void) {
 
     // Read the received character from the data register
     return USART3->RDR;
+    //return read;
 }
+
 
 int lab4_main(void) {
     HAL_Init(); // Reset of all peripherals, init the Flash and Systick
@@ -26,7 +30,6 @@ int lab4_main(void) {
     // Enable USART3 clock
     RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;  // Enable GPIOC clock
-
 
 
     // Set up a configuration struct to pass to the initialization function
@@ -45,35 +48,103 @@ int lab4_main(void) {
     USART3->BRR = HAL_RCC_GetPCLK1Freq() / 115200;
 
     // Enable USART3 transmitter, receiver, and USART itself
-    USART3->CR1 |= USART_CR1_TE | USART_CR1_RE | USART_CR1_UE;
+    USART3->CR1 |= USART_CR1_TE | USART_CR1_RE | USART_CR1_UE | USART_CR1_RXNEIE;
+
     // Debug: Check if USART3 is enabled
     if (! ((USART3->CR1 & USART_CR1_TE) | (USART3->CR1 & USART_CR1_RE) | (USART3->CR1 & USART_CR1_UE))) {
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET); // Turn on blue LED if USART3 is not enabled
         while (1); // Halt execution if USART3 is not enabled
     }
 
+    NVIC_SetPriority(USART3_4_IRQn, 1);
+    NVIC_EnableIRQ(USART3_4_IRQn);
+    
     while (1) {
-        
-        char receivedChar = USART_Receive(); // Wait for a character from serial terminal
+        USART_Transmit('C');
+        USART_Transmit('M');
+        USART_Transmit('D');
+        USART_Transmit('?');
+        USART_Transmit('\n'); // New line for readability  
+        while (flag == 0){}
+        flag = 0;
+
+        //char receivedChar = USART_Receive(); // Wait for a character from serial terminal
         
         // Check received character and toggle corresponding LED
-        switch (receivedChar) {
+        switch (read) {
             
             case 'r':
                 USART_Transmit('r');
-                My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);  // Toggle Red LED
+                USART_Transmit('\n');
+                while (flag == 0){}
+                flag = 0;
+                //If 0
+                if (read == 48){ 
+                    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);  // Turn Off 
+                }
+                //If 1
+                if (read == 49){ 
+                    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);  // Turn On
+                }
+                //If 2
+                if (read == 50){ 
+                    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);  // Toggle
+                }
+                
                 break;
             case 'g':
                 USART_Transmit('g');
-                My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);  // Toggle Green LED
+                USART_Transmit('\n');
+                while (flag == 0){}
+                flag = 0;
+                //If 0
+                if (read == 48){ 
+                    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);  // Turn Off 
+                }
+                //If 1
+                if (read == 49){ 
+                    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);  // Turn On
+                }
+                //If 2
+                if (read == 50){ 
+                    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);  // Toggle
+                }
                 break;
             case 'b':
                 USART_Transmit('b');
-                My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);  // Toggle Blue LED
+                USART_Transmit('\n');
+                while (flag == 0){}
+                flag = 0;
+                //If 0
+                if (read == 48){ 
+                    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);  // Turn Off 
+                }
+                //If 1
+                if (read == 49){ 
+                    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);  // Turn On
+                }
+                //If 2
+                if (read == 50){ 
+                    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);  // Toggle
+                }
                 break;
             case 'o':
                 USART_Transmit('o');
-                My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);  // Toggle Orange LED
+                USART_Transmit('\n');
+                while (flag == 0){}
+                flag = 0;
+                //If 0
+                if (read == 48){ 
+                    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);  // Turn Off 
+                }
+                //If 1
+                if (read == 49){ 
+                    My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);  // Turn On
+                }
+                //If 2
+                if (read == 50){ 
+                    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);  // Toggle
+                }
                 break;
             default:
                 // Send error message if input is invalid
@@ -86,4 +157,9 @@ int lab4_main(void) {
                 break;
         }
     }
+}
+
+void USART3_4_IRQHandler(void){
+    read = USART3->RDR;
+    flag = 1;
 }
